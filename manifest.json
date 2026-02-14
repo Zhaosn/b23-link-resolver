@@ -1,0 +1,10 @@
+{
+  "id": "b23-link-resolver",
+  "name": "B23 Link Resolver",
+  "version": "1.0.0",
+  "minAppVersion": "1.4.0",
+  "description": "自动解析b23.tv短链接为完整长链接，并移除URL参数",
+  "author": "Zhaosn",
+  "authorUrl": "",
+  "isDesktopOnly": false
+}
