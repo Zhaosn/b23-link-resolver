@@ -2,8 +2,8 @@ name: Build and Release
 
 on:
   push:
-    branches: [ main ]  
-  workflow_dispatch:  
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -34,7 +34,7 @@ jobs:
         cp main.js b23-link-resolver/
         cp manifest.json b23-link-resolver/
         cp README.md b23-link-resolver/
-        VERSION=$(date +'%Y%m%d%H%M%S')
+        VERSION=$(date +'%Y%m%d')
         PACKAGE_NAME="b23-link-resolver-v${VERSION}.zip"
         zip -r "$PACKAGE_NAME" b23-link-resolver/
         ls -la *.zip
@@ -67,8 +67,8 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         files: "b23-link-resolver-*.zip"
-        tag_name: "v${{ needs.build.outputs.VERSION }}"
-        name: "Release v${{ needs.build.outputs.VERSION }}"
+        tag_name: "v${{ steps.create_package.outputs.VERSION }}"
+        name: "Release v${{ steps.create_package.outputs.VERSION }}"
         body: "Automated release build"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
