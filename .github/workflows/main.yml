@@ -36,7 +36,7 @@ jobs:
         ls -la *.zip
         gh release create "v${VERSION}" \
           --title "Release v${VERSION}" \
-          --body "Automated release build" \
-          --attach "$PACKAGE_NAME"
+          --notes "Automated release build" \
+          "$PACKAGE_NAME"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
