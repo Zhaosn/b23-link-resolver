@@ -6,20 +6,16 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x]
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js 18.x
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 18.x
         cache: 'npm'
 
     - name: Install dependencies
@@ -28,7 +24,7 @@ jobs:
     - name: Build project
       run: npm run build
 
-    - name: Create release package
+    - name: Create and release package
       run: |
         mkdir -p b23-link-resolver
         cp main.js b23-link-resolver/
@@ -38,37 +34,9 @@ jobs:
         PACKAGE_NAME="b23-link-resolver-v${VERSION}.zip"
         zip -r "$PACKAGE_NAME" b23-link-resolver/
         ls -la *.zip
-        echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_OUTPUT
-        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-      id: create_package
-
-    - name: Upload build artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-artifact
-        path: "b23-link-resolver-*.zip"
-        retention-days: 7
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Download build artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: build-artifact
-        path: .
-
-    - name: List downloaded files
-      run: ls -la
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v2
-      with:
-        files: "b23-link-resolver-*.zip"
-        tag_name: "v${{ steps.create_package.outputs.VERSION }}"
-        name: "Release v${{ steps.create_package.outputs.VERSION }}"
-        body: "Automated release build"
+        gh release create "v${VERSION}" \
+          --title "Release v${VERSION}" \
+          --body "Automated release build" \
+          --attach "$PACKAGE_NAME"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
